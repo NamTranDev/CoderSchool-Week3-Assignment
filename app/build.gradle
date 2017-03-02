@@ -32,7 +32,13 @@ ext {
     retrofitVersion = "2.1.0"
     dagger2Version = "2.8"
     butterKnifeVersion = '8.1.0'
+    dbflowVersion = "4.0.0-beta5"
 }
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -57,4 +63,18 @@ dependencies {
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     provided 'javax.annotation:jsr250-api:1.0'
+
+    //ScribeJava  for the OAuth 1.0a
+    compile 'com.github.scribejava:scribejava-apis:3.2.0'
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    //CodePath OAuth Handler
+    compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
+
+    annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflowVersion}"
+
+
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflowVersion}"
+    compile "com.github.Raizlabs.DBFlow:dbflow:${dbflowVersion}"
+
+
 }
