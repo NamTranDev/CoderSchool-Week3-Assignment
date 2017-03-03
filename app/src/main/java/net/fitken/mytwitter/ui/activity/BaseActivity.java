@@ -14,19 +14,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import net.fitken.mytwitter.MyApplication;
 import net.fitken.mytwitter.R;
-import net.fitken.mytwitter.di.component.TwitterComponent;
 
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 
 /**
  * Created by Ken on 2/17/2017.
  */
 
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
-    protected TwitterComponent mTwitterComponent;
 
     protected T viewDataBinding;
 
@@ -73,7 +71,6 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId());
-        mTwitterComponent = ((MyApplication) getApplication()).getTwitterComponent();
         ButterKnife.bind(this, viewDataBinding.getRoot());
 
         inject();

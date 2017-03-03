@@ -3,11 +3,13 @@ package net.fitken.mytwitter.utils;
 import android.databinding.BindingAdapter;
 import android.widget.ImageView;
 
+
 import com.squareup.picasso.Picasso;
 
 import net.fitken.mytwitter.R;
 
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+
 
 /**
  * Created by Ken on 2/17/2017.

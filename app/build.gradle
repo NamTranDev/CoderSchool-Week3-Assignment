@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 25
@@ -19,6 +18,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // Related to https://github.com/scribejava/scribejava/issues/480
+    // Scribe expects Java 7 or this custom Apache library
+    lintOptions {
+        lintConfig rootProject.file('gradle/lint.xml')
+    }
     dataBinding {
         enabled true
     }
@@ -36,7 +40,8 @@ ext {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -50,19 +55,12 @@ dependencies {
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:recyclerview-v7:${supportLibVersion}"
     compile "com.android.support:support-v4:${supportLibVersion}"
-    apt "com.google.dagger:dagger-compiler:${dagger2Version}"
-    compile "com.google.dagger:dagger:${dagger2Version}"
-    //working with api
-    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
-    compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
-    apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
-    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
+    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.1.0'
-    compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    provided 'javax.annotation:jsr250-api:1.0'
+
 
     //ScribeJava  for the OAuth 1.0a
     compile 'com.github.scribejava:scribejava-apis:3.2.0'

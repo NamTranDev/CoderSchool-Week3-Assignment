@@ -6,14 +6,11 @@ import android.view.MenuItem;
 
 import net.fitken.mytwitter.R;
 import net.fitken.mytwitter.databinding.ActivityMainBinding;
-import net.fitken.mytwitter.service.TwitterApi;
 
-import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
-    @Inject
-    TwitterApi mTwitterApi;
+
 
     @Override
     protected int getLayoutId() {
@@ -21,8 +18,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
-    protected void inject() {
-        mTwitterComponent.inject(this);
+    protected void inject(){
     }
 
     @Override

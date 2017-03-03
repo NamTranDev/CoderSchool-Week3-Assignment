@@ -1,47 +1,40 @@
 package net.fitken.mytwitter;
 
 import android.app.Application;
+import android.content.Context;
 
-import net.fitken.mytwitter.common.Constant;
-import net.fitken.mytwitter.di.component.DaggerNetComponent;
-import net.fitken.mytwitter.di.component.DaggerTwitterComponent;
-import net.fitken.mytwitter.di.component.NetComponent;
-import net.fitken.mytwitter.di.component.TwitterComponent;
-import net.fitken.mytwitter.di.module.AppModule;
-import net.fitken.mytwitter.di.module.NetModule;
-import net.fitken.mytwitter.di.module.TwitterModule;
+import com.raizlabs.android.dbflow.config.FlowConfig;
+import com.raizlabs.android.dbflow.config.FlowLog;
+import com.raizlabs.android.dbflow.config.FlowManager;
+
+import net.fitken.mytwitter.service.RestClient;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 
 /**
  * Created by Ken on 2/16/2017.
  */
 
 public class MyApplication extends Application {
-    private TwitterComponent mTwitterComponent;
-    private NetComponent mNetComponent;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mNetComponent = DaggerNetComponent.builder().appModule(new AppModule(this))
-                .netModule(new NetModule(Constant.URL))
-                .build();
-
-        mTwitterComponent = DaggerTwitterComponent.builder()
-                .netComponent(mNetComponent)
-                .twitterModule(new TwitterModule())
-                .build();
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/Omnes/Omnes-Regular.otf")
                 .setFontAttrId(R.attr.fontPath)
-                .build()
-        );
+                .build());
 
+        FlowManager.init(new FlowConfig.Builder(this).build());
+        FlowLog.setMinimumLoggingLevel(FlowLog.Level.V);
+        MyApplication.context = this;
     }
 
-    public TwitterComponent getTwitterComponent() {
-        return mTwitterComponent;
+
+    public static RestClient getRestClient() {
+        return (RestClient) RestClient.getInstance(RestClient.class, MyApplication.context);
     }
 }
