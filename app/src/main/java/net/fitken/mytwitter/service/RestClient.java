@@ -25,9 +25,9 @@ import org.scribe.builder.api.TwitterApi;
 public class RestClient extends OAuthBaseClient {
 	public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class; // Change this
 	public static final String REST_URL = "https://api.twitter.com/1.1"; // Change this, base API URL
-	public static final String REST_CONSUMER_KEY = "SOME_KEY";       // Change this
-	public static final String REST_CONSUMER_SECRET = "SOME_SECRET"; // Change this
-	public static final String REST_CALLBACK_URL = "oauth://cprest"; // Change this (here and in manifest)
+	public static final String REST_CONSUMER_KEY = "UauwHDkOGImrNdaWOEbLvnYYh";       // Change this
+	public static final String REST_CONSUMER_SECRET = "yejL6pzKUGYgoCJwfc6enSxMr2GwoqGwYjvtgFu28krb1nLGmV"; // Change this
+	public static final String REST_CALLBACK_URL = "oauth://mytwitter"; // Change this (here and in manifest)
 
 	public RestClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
@@ -51,4 +51,18 @@ public class RestClient extends OAuthBaseClient {
 	 *    i.e client.get(apiUrl, params, handler);
 	 *    i.e client.post(apiUrl, params, handler);
 	 */
+
+	public void getHomeTimeline(int page, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("page", String.valueOf(page));
+		getClient().get(apiUrl, params, handler);
+	}
+
+	public void postTweet(String body, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", body);
+		getClient().post(apiUrl, params, handler);
+	}
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 25
@@ -56,7 +57,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${supportLibVersion}"
     compile "com.android.support:support-v4:${supportLibVersion}"
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
-    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
+    apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.1.0'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
@@ -68,11 +69,11 @@ dependencies {
     //CodePath OAuth Handler
     compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
 
-    annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflowVersion}"
+    apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflowVersion}"
 
 
     compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflowVersion}"
     compile "com.github.Raizlabs.DBFlow:dbflow:${dbflowVersion}"
-
+//    compile 'com.android.support.constraint:constraint-layout:1.0.1'
 
 }
