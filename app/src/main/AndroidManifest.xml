@@ -13,7 +13,8 @@
         <activity android:name=".ui.activity.MainActivity">
 
         </activity>
-        <activity android:name=".ui.activity.LoginActivity">
+        <activity android:name=".ui.activity.LoginActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

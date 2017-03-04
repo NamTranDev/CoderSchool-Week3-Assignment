@@ -61,6 +61,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.1.0'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    compile 'com.google.code.gson:gson:2.7'
 
 
     //ScribeJava  for the OAuth 1.0a
@@ -74,6 +75,6 @@ dependencies {
 
     compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflowVersion}"
     compile "com.github.Raizlabs.DBFlow:dbflow:${dbflowVersion}"
-//    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
 
 }

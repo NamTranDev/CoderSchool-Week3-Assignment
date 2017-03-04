@@ -8,6 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -73,9 +74,16 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId());
         ButterKnife.bind(this, viewDataBinding.getRoot());
 
+        // Find the view_toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the view_toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
         inject();
         init();
-
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 
     @Override

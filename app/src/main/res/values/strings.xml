@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">My Twitter</string>
     <string name="loading">Loading…</string>
-    <string name="login">login</string>
+    <string name="login">Connect to Twitter</string>
 </resources>

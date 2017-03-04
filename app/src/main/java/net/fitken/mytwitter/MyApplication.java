@@ -24,7 +24,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/Omnes/Omnes-Regular.otf")
+                .setDefaultFontPath("fonts/Omnes-Regular.otf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
 
