@@ -1,6 +1,8 @@
 package net.fitken.mytwitter.ui.activity;
 
 import android.databinding.ViewDataBinding;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,11 +17,13 @@ import net.fitken.mytwitter.R;
 import net.fitken.mytwitter.databinding.ActivityMainBinding;
 import net.fitken.mytwitter.databinding.ItemTweetBinding;
 import net.fitken.mytwitter.models.TweetModel;
-import net.fitken.mytwitter.service.RestClient;
 import net.fitken.mytwitter.ui.adapter.AbsBindingAdapter;
 import net.fitken.mytwitter.ui.adapter.RecyclerViewClickListener;
+import net.fitken.mytwitter.ui.widget.DividerItemDecoration;
+import net.fitken.mytwitter.utils.AlertDialogUtils;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -32,6 +36,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
 
     private List<TweetModel> mListTweet;
+    private int mPage = 1;
+    private LinearLayoutManager mLayoutManager;
+    private boolean mIsLoading;
 
     @Override
     protected int getLayoutId() {
@@ -45,6 +52,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     protected void init() {
         mListTweet = new ArrayList<>();
+        viewDataBinding.mainRvTweets.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         viewDataBinding.mainRvTweets.setAdapter(new AbsBindingAdapter<ItemTweetBinding>(new RecyclerViewClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -63,24 +71,77 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
             @Override
             public void updateBinding(ViewDataBinding binding, int position) {
-
+                if (binding instanceof ItemTweetBinding) {
+                    ((ItemTweetBinding) binding).setTweet(mListTweet.get(position));
+                }
             }
 
             @Override
             public int getItemCount() {
                 return mListTweet.size();
             }
+
+            @Override
+            public long getItemId(int position) {
+                return mListTweet.get(position).getId();
+            }
         });
-        RestClient client = MyApplication.getRestClient();
-        client.getHomeTimeline(1, new JsonHttpResponseHandler() {
+        viewDataBinding.mainSwipeContainer.setRefreshing(true);
+        viewDataBinding.mainSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        viewDataBinding.mainSwipeContainer.setOnRefreshListener(() -> {
+            mPage = 1;
+            getTweets();
+        });
+
+        mLayoutManager = ((LinearLayoutManager) viewDataBinding.mainRvTweets.getLayoutManager());
+        viewDataBinding.mainRvTweets.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (mIsLoading)
+                    return;
+                if (mLayoutManager.findLastCompletelyVisibleItemPosition() == mListTweet.size() - 4) {
+                    mPage++;
+                    getTweets();
+                    mIsLoading = true;
+                }
+            }
+        });
+        getTweets();
+    }
+
+    private void getTweets() {
+        MyApplication.getRestClient().getHomeTimeline(mPage, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                mIsLoading = false;
+                viewDataBinding.mainSwipeContainer.setRefreshing(false);
+                if (mPage == 1) {
+                    mListTweet.clear();
+                }
                 // Response is automatically parsed into a JSONArray
                 Gson gson = new Gson();
                 Type listType = new TypeToken<List<TweetModel>>() {
                 }.getType();
-                mListTweet = gson.fromJson(json.toString(), listType);
-                viewDataBinding.mainRvTweets.getAdapter().notifyDataSetChanged();
+                mListTweet.addAll(gson.fromJson(json.toString(), listType));
+                viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                mIsLoading = false;
+                viewDataBinding.mainSwipeContainer.setRefreshing(false);
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                AlertDialogUtils.showError(MainActivity.this, throwable.getMessage());
             }
         });
     }

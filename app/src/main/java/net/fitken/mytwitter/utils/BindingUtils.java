@@ -1,14 +1,20 @@
 package net.fitken.mytwitter.utils;
 
 import android.databinding.BindingAdapter;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.TextView;
 
-
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import net.fitken.mytwitter.R;
+import net.fitken.mytwitter.models.TweetModel;
+import net.fitken.mytwitter.ui.widget.DynamicHeightImageView;
 
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -17,28 +23,53 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class BindingUtils {
     @BindingAdapter("imgUrlWithTransform")
-    public static void loadImageUrlWithTransform(ImageView imageView, String imgUrl) {
+    public static void loadImageUrlWithTransform(RoundedImageView imageView, String imgUrl) {
         if (imgUrl.isEmpty()) {
             imageView.setImageResource(R.drawable.image_not_found);
             return;
         }
-        Picasso.with(imageView.getContext()).load(imgUrl)
-                .transform(new RoundedCornersTransformation(10, 0))
+        if (imgUrl.contains("_normal")) {
+            imgUrl = imgUrl.replace("_normal", "");
+        }
+        Glide.with(imageView.getContext()).load(imgUrl)
+                .asBitmap()
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.image_not_found)
                 .into(imageView);
     }
 
     @BindingAdapter("imgUrl")
-    public static void loadImageUrl(ImageView imageView, String imgUrl) {
-        if (imgUrl.isEmpty()) {
-            imageView.setImageResource(R.drawable.image_not_found);
+    public static void loadImageUrl(DynamicHeightImageView imageView, TweetModel tweetModel) {
+        if (tweetModel.getEntities().getMedia() == null || tweetModel.getEntities().getMedia().isEmpty()) {
+            imageView.setVisibility(View.GONE);
             return;
         }
-        Picasso.with(imageView.getContext()).load(imgUrl)
+        imageView.setVisibility(View.VISIBLE);
+        String imgUrl;
+        List<TweetModel.EntitiesModel.MediaModel> listMedia = tweetModel.getEntities().getMedia();
+        imgUrl = listMedia.get(0).getMediaUrl();
+        imageView.setHeightRatio(((double) listMedia.get(0).getSizes().getMedium().getH())
+                / listMedia.get(0).getSizes().getMedium().getW());
+        Glide.with(imageView.getContext()).load(imgUrl)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.image_not_found)
                 .into(imageView);
+    }
+
+    @BindingAdapter("relativeTimeAgo")
+    public static void getRelativeTimeAgo(TextView textView, String rawJsonDate) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+        String relativeDate = "";
+        try {
+            long dateMillis = sf.parse(rawJsonDate).getTime();
+            relativeDate = DateUtils.getTimeAgo(dateMillis);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        textView.setText(relativeDate);
     }
 }
 

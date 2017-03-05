@@ -46,6 +46,7 @@ public class DateUtils {
 
     public static final SimpleDateFormat FORMAT_DAY_MONTH_YEAR = new SimpleDateFormat("dd MMM yyyy", Locale.US);
     public static final SimpleDateFormat FORMAT_YYYYMMDD = new SimpleDateFormat("yyyyMMdd", Locale.US);
+    public static final SimpleDateFormat FORMAT_TIME_TWITTER = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.US);
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -245,48 +246,41 @@ public class DateUtils {
         return "";
     }
 
-    public static String getTimeAgo(String dateTime) {
-        try {
-            Date date = FORMAT_DATE_TIME_2.parse(dateTime);
-            long time = date.getTime();
-            long now = System.currentTimeMillis();
+    public static String getTimeAgo(long time) {
+        long now = System.currentTimeMillis();
 
-            if (time < 1000000000000L) {
-                // if timestamp given in seconds, convert to millis
-                time *= 1000;
-            }
-
-            if (time > now || time <= 0) {
-                return null;
-            }
-
-            final long diff = now - time;
-            if (diff < MINUTE_MILLIS) {
-                return "Just now";
-            }
-            if (diff < 2 * MINUTE_MILLIS) {
-                return "A minute ago";
-            }
-            if (diff < 50 * MINUTE_MILLIS) {
-                return diff / MINUTE_MILLIS + " minutes ago";
-            }
-            if (diff < 90 * MINUTE_MILLIS) {
-                return "An hour ago";
-            }
-            if (diff < 24 * HOUR_MILLIS) {
-                return diff / HOUR_MILLIS + " hours ago";
-            }
-            if (diff < 48 * HOUR_MILLIS) {
-                return "Yesterday at " + TIME_AM_PM_FORMAT.format(date);
-            }
-            if (diff < 24 * 7 * HOUR_MILLIS) {
-                return diff / DAY_MILLIS + " days ago at " + TIME_AM_PM_FORMAT.format(date);
-            } else {
-                return getDateTimeFormat2(dateTime);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (time < 1000000000000L) {
+            // if timestamp given in seconds, convert to millis
+            time *= 1000;
         }
-        return "";
+
+        if (time > now || time <= 0) {
+            return null;
+        }
+
+        final long diff = now - time;
+        if (diff < MINUTE_MILLIS) {
+            return "Just now";
+        }
+        if (diff < 2 * MINUTE_MILLIS) {
+            return "1m ago";
+        }
+        if (diff < 50 * MINUTE_MILLIS) {
+            return diff / MINUTE_MILLIS + "m ago";
+        }
+        if (diff < 90 * MINUTE_MILLIS) {
+            return "1h ago";
+        }
+        if (diff < 24 * HOUR_MILLIS) {
+            return diff / HOUR_MILLIS + "h ago";
+        }
+        if (diff < 48 * HOUR_MILLIS) {
+            return "Yesterday at " + TIME_AM_PM_FORMAT.format(new Date(time));
+        }
+        if (diff < 24 * 7 * HOUR_MILLIS) {
+            return diff / DAY_MILLIS + " days ago at " + TIME_AM_PM_FORMAT.format(new Date(time));
+        } else {
+            return TIME_AM_PM_DAY_FORMAT.format(new Date(time));
+        }
     }
 }

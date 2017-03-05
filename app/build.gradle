@@ -58,8 +58,9 @@ dependencies {
     compile "com.android.support:support-v4:${supportLibVersion}"
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
     apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'jp.wasabeef:picasso-transformations:2.1.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.makeramen:roundedimageview:2.3.0'
+    // If you want to use the GPU Filters
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.google.code.gson:gson:2.7'
 
