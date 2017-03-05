@@ -2,6 +2,7 @@ package net.fitken.mytwitter.utils;
 
 import android.databinding.BindingAdapter;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -9,7 +10,6 @@ import com.makeramen.roundedimageview.RoundedImageView;
 
 import net.fitken.mytwitter.R;
 import net.fitken.mytwitter.models.TweetModel;
-import net.fitken.mytwitter.ui.widget.DynamicHeightImageView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,7 +39,7 @@ public class BindingUtils {
     }
 
     @BindingAdapter("imgUrl")
-    public static void loadImageUrl(DynamicHeightImageView imageView, TweetModel tweetModel) {
+    public static void loadImageUrl(ImageView imageView, TweetModel tweetModel) {
         if (tweetModel.getEntities().getMedia() == null || tweetModel.getEntities().getMedia().isEmpty()) {
             imageView.setVisibility(View.GONE);
             return;
@@ -48,8 +48,6 @@ public class BindingUtils {
         String imgUrl;
         List<TweetModel.EntitiesModel.MediaModel> listMedia = tweetModel.getEntities().getMedia();
         imgUrl = listMedia.get(0).getMediaUrl();
-        imageView.setHeightRatio(((double) listMedia.get(0).getSizes().getMedium().getH())
-                / listMedia.get(0).getSizes().getMedium().getW());
         Glide.with(imageView.getContext()).load(imgUrl)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.image_not_found)
