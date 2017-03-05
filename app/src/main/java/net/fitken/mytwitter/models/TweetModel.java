@@ -402,6 +402,8 @@ public class TweetModel extends BaseModel {
         @SerializedName("favourites_count")
         private long favouritesCount;
         @Column
+        private boolean verified;
+        @Column
         @SerializedName("statuses_count")
         private long statusesCount;
         @Column
@@ -422,6 +424,14 @@ public class TweetModel extends BaseModel {
 
         @ForeignKey(stubbedRelationship = true)
         TweetModel owner;
+
+        public boolean isVerified() {
+            return verified;
+        }
+
+        public void setVerified(boolean verified) {
+            this.verified = verified;
+        }
 
         public void setId(long id) {
             this.id = id;

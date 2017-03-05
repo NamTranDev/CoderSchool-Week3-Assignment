@@ -270,17 +270,17 @@ public class DateUtils {
         }
         if (diff < 90 * MINUTE_MILLIS) {
             return "1h ago";
-        }
-        if (diff < 24 * HOUR_MILLIS) {
+        } else/*if (diff < 24 * HOUR_MILLIS)*/ {
             return diff / HOUR_MILLIS + "h ago";
         }
-        if (diff < 48 * HOUR_MILLIS) {
+        /*if (diff < 48 * HOUR_MILLIS) {
             return "Yesterday at " + TIME_AM_PM_FORMAT.format(new Date(time));
         }
         if (diff < 24 * 7 * HOUR_MILLIS) {
             return diff / DAY_MILLIS + " days ago at " + TIME_AM_PM_FORMAT.format(new Date(time));
-        } else {
-            return TIME_AM_PM_DAY_FORMAT.format(new Date(time));
         }
+        else {
+            return TIME_AM_PM_DAY_FORMAT.format(new Date(time));
+        }*/
     }
 }

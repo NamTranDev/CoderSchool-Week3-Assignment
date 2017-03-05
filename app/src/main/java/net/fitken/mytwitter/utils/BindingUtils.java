@@ -2,7 +2,6 @@ package net.fitken.mytwitter.utils;
 
 import android.databinding.BindingAdapter;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,8 +21,8 @@ import java.util.Locale;
  */
 
 public class BindingUtils {
-    @BindingAdapter("imgUrlWithTransform")
-    public static void loadImageUrlWithTransform(RoundedImageView imageView, String imgUrl) {
+    @BindingAdapter("imgUrlProfile")
+    public static void loadImageProfile(RoundedImageView imageView, String imgUrl) {
         if (imgUrl.isEmpty()) {
             imageView.setImageResource(R.drawable.image_not_found);
             return;
@@ -38,8 +37,8 @@ public class BindingUtils {
                 .into(imageView);
     }
 
-    @BindingAdapter("imgUrl")
-    public static void loadImageUrl(ImageView imageView, TweetModel tweetModel) {
+    @BindingAdapter("imgUrlContent")
+    public static void loadImageUrlContent(RoundedImageView imageView, TweetModel tweetModel) {
         if (tweetModel.getEntities().getMedia() == null || tweetModel.getEntities().getMedia().isEmpty()) {
             imageView.setVisibility(View.GONE);
             return;
@@ -49,6 +48,7 @@ public class BindingUtils {
         List<TweetModel.EntitiesModel.MediaModel> listMedia = tweetModel.getEntities().getMedia();
         imgUrl = listMedia.get(0).getMediaUrl();
         Glide.with(imageView.getContext()).load(imgUrl)
+                .asBitmap()
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.image_not_found)
                 .into(imageView);

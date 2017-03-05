@@ -1,6 +1,7 @@
 package net.fitken.mytwitter.ui.activity;
 
 import android.databinding.ViewDataBinding;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import net.fitken.mytwitter.databinding.ItemTweetBinding;
 import net.fitken.mytwitter.models.TweetModel;
 import net.fitken.mytwitter.ui.adapter.AbsBindingAdapter;
 import net.fitken.mytwitter.ui.adapter.RecyclerViewClickListener;
+import net.fitken.mytwitter.ui.dialog.ComposeTweetDialogFragment;
 import net.fitken.mytwitter.ui.widget.DividerItemDecoration;
 import net.fitken.mytwitter.utils.AlertDialogUtils;
 
@@ -29,6 +31,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 
 
@@ -144,6 +147,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 AlertDialogUtils.showError(MainActivity.this, throwable.getMessage());
             }
         });
+    }
+
+    @OnClick(R.id.fab_compose_tweet)
+    public void composeTweet(View view) {
+        FragmentManager fm = getSupportFragmentManager();
+        ComposeTweetDialogFragment settingDialogFragment = ComposeTweetDialogFragment.newInstance();
+        settingDialogFragment.show(fm, ComposeTweetDialogFragment.class.getSimpleName());
     }
 
 
