@@ -57,6 +57,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     protected void init() {
         handler = () -> {
             viewDataBinding.mainSwipeContainer.setRefreshing(true);
+            mPage = 1;
             getTweets();
         };
         mListTweet = new ArrayList<>();
