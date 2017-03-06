@@ -6,7 +6,8 @@
     android:background="@color/colorPrimary"
     android:minHeight="?attr/actionBarSize"
     android:theme="@style/ToolbarTheme"
-    app:layout_scrollFlags="scroll|enterAlways|snap"
+    app:layout_scrollFlags="scroll|enterAlways"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:titleTextAppearance="@style/Toolbar.TitleText"
+    android:fitsSystemWindows="true"
     app:titleTextColor="@android:color/white" />
