@@ -9,17 +9,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import net.fitken.mytwitter.MyApplication;
 import net.fitken.mytwitter.R;
 import net.fitken.mytwitter.databinding.FragmentComposeTweetBinding;
+import net.fitken.mytwitter.ui.activity.MainActivity;
+import net.fitken.mytwitter.utils.AlertDialogUtils;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by Ken on 3/5/2017.
  */
 
 public class ComposeTweetDialogFragment extends DialogFragment {
+    public static final String IMG_URL_PROFILE = "imgUrlProfile";
     private FragmentComposeTweetBinding binding;
+    private MainActivity.ComposeTweet handler;
 
     public ComposeTweetDialogFragment() {
         // Empty constructor is required for DialogFragment
@@ -28,11 +37,16 @@ public class ComposeTweetDialogFragment extends DialogFragment {
     }
 
 
-    public static ComposeTweetDialogFragment newInstance() {
+    public static ComposeTweetDialogFragment newInstance(String imgUrlProfile) {
         ComposeTweetDialogFragment frag = new ComposeTweetDialogFragment();
         Bundle args = new Bundle();
+        args.putString(IMG_URL_PROFILE, imgUrlProfile);
         frag.setArguments(args);
         return frag;
+    }
+
+    public void setHandler(MainActivity.ComposeTweet handler) {
+        this.handler = handler;
     }
 
     @Override
@@ -41,7 +55,8 @@ public class ComposeTweetDialogFragment extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_compose_tweet, container, false);
         ButterKnife.bind(this, binding.getRoot());
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
+        binding.setImgUrlProfile(getArguments().getString(IMG_URL_PROFILE));
+        getDialog().setCancelable(false);
         return binding.getRoot();
     }
 
@@ -49,5 +64,29 @@ public class ComposeTweetDialogFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+
+    @OnClick(R.id.img_close)
+    public void close(View view) {
+        dismiss();
+    }
+
+    @OnClick(R.id.btn_submit_tweet)
+    public void submitTweet(View view) {
+        MyApplication.getRestClient().postTweet(binding.etTweetContent.getText().toString(), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                AlertDialogUtils.showError(getActivity(), "success");
+                dismiss();
+                if (handler != null) {
+                    handler.onPostedNewTweet();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                AlertDialogUtils.showError(getActivity(), error.getMessage());
+            }
+        });
     }
 }

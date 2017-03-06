@@ -2,4 +2,6 @@
     <string name="app_name">My Twitter</string>
     <string name="loading">Loading…</string>
     <string name="login">Connect to Twitter</string>
+    <string name="tweet">Tweet</string>
+    <string name="what_s_happening">What\'s happening?</string>
 </resources>

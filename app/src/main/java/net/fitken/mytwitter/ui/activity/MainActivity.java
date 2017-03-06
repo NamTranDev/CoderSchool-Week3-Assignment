@@ -42,6 +42,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     private int mPage = 1;
     private LinearLayoutManager mLayoutManager;
     private boolean mIsLoading;
+    private ComposeTweet handler;
 
     @Override
     protected int getLayoutId() {
@@ -54,6 +55,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     @Override
     protected void init() {
+        handler = () -> {
+            viewDataBinding.mainSwipeContainer.setRefreshing(true);
+            getTweets();
+        };
         mListTweet = new ArrayList<>();
         viewDataBinding.mainRvTweets.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         viewDataBinding.mainRvTweets.setAdapter(new AbsBindingAdapter<ItemTweetBinding>(new RecyclerViewClickListener() {
@@ -119,6 +124,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 }
             }
         });
+
         getTweets();
     }
 
@@ -136,7 +142,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 Type listType = new TypeToken<List<TweetModel>>() {
                 }.getType();
                 mListTweet.addAll(gson.fromJson(json.toString(), listType));
-                viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
+                if (mPage == 1) {
+                    viewDataBinding.mainRvTweets.getAdapter().notifyDataSetChanged();
+                } else {
+                    viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
+                }
             }
 
             @Override
@@ -152,8 +162,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @OnClick(R.id.fab_compose_tweet)
     public void composeTweet(View view) {
         FragmentManager fm = getSupportFragmentManager();
-        ComposeTweetDialogFragment settingDialogFragment = ComposeTweetDialogFragment.newInstance();
-        settingDialogFragment.show(fm, ComposeTweetDialogFragment.class.getSimpleName());
+        ComposeTweetDialogFragment composeTweetDialogFragment = ComposeTweetDialogFragment.newInstance("");
+        composeTweetDialogFragment.show(fm, ComposeTweetDialogFragment.class.getSimpleName());
+        composeTweetDialogFragment.setHandler(handler);
     }
 
 
@@ -164,7 +175,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     @Override
     protected void resumeScreen() {
-
     }
 
     @Override
@@ -191,4 +201,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
 
+    public interface ComposeTweet {
+        void onPostedNewTweet();
+    }
 }
