@@ -1,6 +1,7 @@
 package net.fitken.mytwitter.ui.activity;
 
 import android.databinding.ViewDataBinding;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fitken.mytwitter.MyApplication;
@@ -24,6 +26,7 @@ import net.fitken.mytwitter.ui.adapter.RecyclerViewClickListener;
 import net.fitken.mytwitter.ui.dialog.ComposeTweetDialogFragment;
 import net.fitken.mytwitter.ui.widget.DividerItemDecoration;
 import net.fitken.mytwitter.utils.AlertDialogUtils;
+import net.fitken.mytwitter.utils.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,6 +134,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     private void getTweets() {
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            mIsLoading = false;
+            viewDataBinding.mainSwipeContainer.setRefreshing(false);
+            if (!mListTweet.isEmpty()) {
+                Snackbar.make(viewDataBinding.getRoot(), "Network unavailable!", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+            mListTweet = SQLite.select().
+                    from(TweetModel.class).queryList();
+            viewDataBinding.mainRvTweets.getAdapter().notifyDataSetChanged();
+            return;
+        }
         MyApplication.getRestClient().getHomeTimeline(mPage, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
