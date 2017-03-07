@@ -12,6 +12,7 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import net.fitken.mytwitter.MyApplication;
 import net.fitken.mytwitter.R;
@@ -148,6 +149,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 } else {
                     viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
                 }
+                //save to database
+                mListTweet.forEach(BaseModel::save);
             }
 
             @Override

@@ -3,6 +3,7 @@ package net.fitken.mytwitter;
 import android.app.Application;
 import android.content.Context;
 
+import com.facebook.stetho.Stetho;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowLog;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -31,6 +32,8 @@ public class MyApplication extends Application {
         FlowManager.init(new FlowConfig.Builder(this).build());
         FlowLog.setMinimumLoggingLevel(FlowLog.Level.V);
         MyApplication.context = this;
+
+        Stetho.initializeWithDefaults(this);
     }
 
 
