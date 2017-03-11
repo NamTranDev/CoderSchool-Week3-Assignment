@@ -182,8 +182,15 @@ public class TweetModel extends BaseModel {
             private SizesModel sizes;
 
             @Column
-            Integer entitiesId;
+            private int entitiesId;
 
+            public int getEntitiesId() {
+                return entitiesId;
+            }
+
+            public void setEntitiesId(int entitiesId) {
+                this.entitiesId = entitiesId;
+            }
 
             public void setId(long id) {
                 this.id = id;
@@ -368,7 +375,15 @@ public class TweetModel extends BaseModel {
             private String displayUrl;
 
             @Column
-            Integer entitiesId;
+            private int entitiesId;
+
+            public int getEntitiesId() {
+                return entitiesId;
+            }
+
+            public void setEntitiesId(int entitiesId) {
+                this.entitiesId = entitiesId;
+            }
 
             public int getId() {
                 return id;

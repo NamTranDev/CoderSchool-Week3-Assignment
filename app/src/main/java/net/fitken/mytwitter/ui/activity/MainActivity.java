@@ -1,6 +1,7 @@
 package net.fitken.mytwitter.ui.activity;
 
 import android.databinding.ViewDataBinding;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import net.fitken.mytwitter.R;
 import net.fitken.mytwitter.databinding.ActivityMainBinding;
 import net.fitken.mytwitter.databinding.ItemTweetBinding;
 import net.fitken.mytwitter.models.TweetModel;
+import net.fitken.mytwitter.models.TweetModel_Table;
 import net.fitken.mytwitter.ui.adapter.AbsBindingAdapter;
 import net.fitken.mytwitter.ui.adapter.RecyclerViewClickListener;
 import net.fitken.mytwitter.ui.dialog.ComposeTweetDialogFragment;
@@ -142,7 +144,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 return;
             }
             mListTweet = SQLite.select().
-                    from(TweetModel.class).queryList();
+                    from(TweetModel.class).orderBy(TweetModel_Table.id, false).queryList();
             viewDataBinding.mainRvTweets.getAdapter().notifyDataSetChanged();
             return;
         }
@@ -165,7 +167,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
                 }
                 //save to database
-                mListTweet.forEach(BaseModel::save);
+//                mListTweet.forEach(BaseModel::save);
+                new AsyncSaveTweetToDb().execute(mListTweet);
             }
 
             @Override
@@ -222,5 +225,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     public interface ComposeTweet {
         void onPostedNewTweet();
+    }
+
+    public class AsyncSaveTweetToDb extends AsyncTask<List<TweetModel>, Void, Void> {
+
+        @SafeVarargs
+        @Override
+        protected final Void doInBackground(List<TweetModel>... params) {
+            (params[0]).forEach(BaseModel::save);
+            return null;
+        }
     }
 }
