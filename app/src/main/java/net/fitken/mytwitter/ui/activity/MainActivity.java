@@ -160,15 +160,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 Gson gson = new Gson();
                 Type listType = new TypeToken<List<TweetModel>>() {
                 }.getType();
-                mListTweet.addAll(gson.fromJson(json.toString(), listType));
+                List<TweetModel> results = gson.fromJson(json.toString(), listType);
+                mListTweet.addAll(results);
                 if (mPage == 1) {
                     viewDataBinding.mainRvTweets.getAdapter().notifyDataSetChanged();
                 } else {
-                    viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - 1);
+                    viewDataBinding.mainRvTweets.getAdapter().notifyItemInserted(mListTweet.size() - results.size());
                 }
                 //save to database
 //                mListTweet.forEach(BaseModel::save);
-                new AsyncSaveTweetToDb().execute(mListTweet);
+                new AsyncSaveTweetToDb().execute(results);
             }
 
             @Override
