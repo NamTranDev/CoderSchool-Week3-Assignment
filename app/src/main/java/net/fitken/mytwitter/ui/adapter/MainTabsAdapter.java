@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MainTabsAdapter extends FragmentStatePagerAdapter {
     private List<Fragment> mFragments;
-    private String tabTitles[] = new String[]{"Home", "Mention"};
+    private String tabTitles[] = new String[]{"Home", "Mentions"};
 
     public MainTabsAdapter(FragmentManager fm) {
         super(fm);
