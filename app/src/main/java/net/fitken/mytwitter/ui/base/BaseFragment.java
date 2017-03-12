@@ -1,157 +1,72 @@
-package net.fitken.mytwitter.ui.activity;
+package net.fitken.mytwitter.ui.base;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import net.fitken.mytwitter.R;
 
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
 
 /**
- * Created by Ken on 2/17/2017.
+ * Created by hung.nguyen on 3/10/2017.
  */
 
-public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
-
+public  abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     protected T viewDataBinding;
 
-    /**
-     * setup content layout
-     *
-     * @return layout id
-     */
     @LayoutRes
     protected abstract int getLayoutId();
 
-    /**
-     * inject dependencies
-     */
-    protected abstract void inject();
+    protected abstract void init(@Nullable View view);
 
-    /**
-     * init for data
-     */
-    protected abstract void init();
+    protected abstract void screenResume();
 
-
-    /**
-     * start screen
-     */
-    protected abstract void startScreen();
-
-    /**
-     * resume screen
-     */
-    protected abstract void resumeScreen();
-
-    /**
-     * pause screen
-     */
-    protected abstract void pauseScreen();
-
-    /**
-     * destroy screen
-     */
-    protected abstract void destroyScreen();
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewDataBinding = DataBindingUtil.setContentView(this, getLayoutId());
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewDataBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false);
         ButterKnife.bind(this, viewDataBinding.getRoot());
-
-        // Find the view_toolbar view inside the activity layout
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the view_toolbar exists in the activity and is not null
-        setSupportActionBar(toolbar);
-        inject();
-        init();
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        return viewDataBinding.getRoot();
     }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        init(view);
     }
 
     @Override
-    public void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        startScreen();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-    }
-
-    @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        System.gc();
-        System.runFinalization();
-        resumeScreen();
-
+        screenResume();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        pauseScreen();
-    }
-
-    @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
-
         System.gc();
-        System.runFinalization();
-        destroyScreen();
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        View v = getCurrentFocus();
-        if (v instanceof EditText) {
-            int[] scoops = new int[2];
-            v.getLocationOnScreen(scoops);
-            float x = event.getRawX() + v.getLeft() - scoops[0];
-            float y = event.getRawY() + v.getTop() - scoops[1];
+    public void onPause() {
+        super.onPause();
+        dismissProgress();
+    }
 
-            if (event.getAction() == MotionEvent.ACTION_UP
-                    && (x < v.getLeft() || x >= v.getRight() || y < v.getTop() || y > v
-                    .getBottom())) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v
-                        .getWindowToken(), 0);
-            }
-        }
-        return super.dispatchTouchEvent(event);
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     /**
@@ -174,13 +89,22 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         showProgress(msgResId, null);
     }
 
+
+    /**
+     * show progress dialog.
+     *
+     * @param msgResId
+     */
+    public void showProgress(String msgResId) {
+        showProgress(msgResId, null);
+    }
+
     /**
      *
      */
     public void showProgress() {
         showProgress(R.string.loading, null);
     }
-
 
     /**
      * @param msgResId
@@ -192,9 +116,9 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             return;
         }
-        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setCancelable(false);
+        // mProgressDialog.setCancelable(false);
 
         if (msgResId != 0) {
             mProgressDialog.setMessage(getResources().getString(msgResId));
@@ -209,6 +133,28 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
         mProgressDialog.show();
     }
 
+    /**
+     * @param msgResId
+     * @param keyListener
+     */
+    public void showProgress(@NonNull String msgResId,
+                             DialogInterface.OnKeyListener keyListener) {
+
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setIndeterminate(true);
+        // mProgressDialog.setCancelable(false);
+
+        if (keyListener != null) {
+            mProgressDialog.setOnKeyListener(keyListener);
+
+        } else {
+            mProgressDialog.setCancelable(false);
+        }
+        mProgressDialog.show();
+    }
 
     /**
      * @param isCancel
@@ -236,10 +182,8 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      * @param msg message want to show
      */
     public final void showToastMessage(final CharSequence msg) {
-        if (isFinishing())
-            return;
         if (mToast == null) {
-            mToast = Toast.makeText(getApplicationContext(), "",
+            mToast = Toast.makeText(getActivity(), "",
                     Toast.LENGTH_LONG);
         }
 
@@ -260,8 +204,10 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      * @param resId id of message wants to show
      */
     public final void showToastMessage(final int resId) {
+        if (!isAdded())
+            return;
         if (mToast == null) {
-            mToast = Toast.makeText(getApplicationContext(), "",
+            mToast = Toast.makeText(getActivity(), "",
                     Toast.LENGTH_LONG);
         }
 
@@ -290,7 +236,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      * @param msg message wants to show
      */
     public final void showToastMessageNotRelease(final CharSequence msg) {
-        Toast toast = Toast.makeText(getApplicationContext(), "",
+        Toast toast = Toast.makeText(getActivity(), "",
                 Toast.LENGTH_LONG);
         if (toast != null) {
             // Cancel last message toast
@@ -309,7 +255,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
      * @param resId message wants to show
      */
     public final void showToastMessageNotRelease(final int resId) {
-        Toast toast = Toast.makeText(getApplicationContext(), "",
+        Toast toast = Toast.makeText(getActivity(), "",
                 Toast.LENGTH_LONG);
         if (toast != null) {
             if (!toast.getView().isShown()) {
